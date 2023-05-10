@@ -1,0 +1,4 @@
+requests
+ruff
+flask
+gunicorn
