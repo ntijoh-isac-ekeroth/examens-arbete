@@ -1,3 +1,7 @@
 # examens-arbete
 
-Ruff `ruff check ./src --fix`
+## TODO?
+
+- Websockets
+- låg load prestanda
+-
