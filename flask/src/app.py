@@ -8,11 +8,6 @@ app = Flask(__name__)
 def raw_json():
     return {"message": "Static GET Success"}
 
-# FIXME: kanske inte använda
-@app.route("/html", methods=['GET'])
-def html():
-    return '<div>Hello World</div'
-
 @app.route('/parse_url/<int:id>', methods=['GET'])
 def parse_url(id):
     return {'message': id}
@@ -29,4 +24,3 @@ def post():
 @app.route('/post_read', methods=['POST'])
 def post_read():
     return request.get_json()
-
