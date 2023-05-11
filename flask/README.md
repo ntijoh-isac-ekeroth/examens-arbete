@@ -1,6 +1,6 @@
 # Flask
 
-Start development server: `flask`
+Start development server: `flask`\
 Start production server: `gunicorn -w 8 app:app`
 
 ## ruff
