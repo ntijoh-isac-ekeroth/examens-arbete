@@ -44,7 +44,8 @@ class VerifyResponse():
         if not (r.headers["content-type"] == "application/json"):
             raise ResponseValueError(self.request_url)
 
-        if r.headers["content-length"] != len(str(r.json())) + len(r.headers["connection"]):
+        request_content_lenght = len(str(r.json())) + len(r.headers["connection"])
+        if r.headers["content-length"] != request_content_lenght:
             print(r.headers)
             print(r.json())
             raise ResponseValueError(self.request_url)
