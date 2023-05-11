@@ -35,6 +35,8 @@ while getopts "d:u:r:ohesw:" opt; do
     esac
 done
 
+# Remove / from end of url if included by the user
+url=$(echo $url | sed 's/\/$//')
 
 # source bash_loading_animations.sh
 
