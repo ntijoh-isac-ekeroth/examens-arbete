@@ -24,3 +24,7 @@ def post():
 @app.route('/post_read', methods=['POST'])
 def post_read():
     return request.get_json()
+
+@app.route('/post_read_big_body', methods=['POST'])
+def post_read_big_body():
+    return request.get_json()

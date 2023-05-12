@@ -21,7 +21,7 @@ async def raw_json():
 async def parse_url(id : int):
     return {'message': id}
 
-@app.post('/delay/{id}')
+@app.get('/delay/{id}')
 async def delay(id : int):
     sleep(id)
     return {"message": id}
@@ -32,4 +32,8 @@ async def post():
 
 @app.post('/post_read')
 async def post_read(body : Post_Read_Body):
+    return body
+
+@app.post('/post_read_big_body')
+async def post_read_big_body(body : Post_Read_Body):
     return body
