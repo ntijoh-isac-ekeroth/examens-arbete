@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/opt/homebrew/bin/bash
+##!/bin/bash
 
 duration=5s
 url='http://localhost:5000'
@@ -7,6 +8,10 @@ output=true
 show_errors=false
 skip_benchmarks=false
 max_workers=100
+mode="full" # full, skip, only
+
+# sets stages to all stages if no stages are specified
+readarray -t all_stages <<< $(ls -1 stages)
 
 function usage() {
     echo "Usage: benchmark.sh [flags]
@@ -17,23 +22,33 @@ function usage() {
     -h help, shows this menu
     -e show-errors, show errors in report
     -s skip_benchmarks, skips all benchmarks
-    -w max_workers, sets the max amount of workers for vegeta (100)"
+    -w max_workers, sets the max amount of workers for vegeta (100)
+    -m mode, full, skip, only (full)
+    -b stages, json object with stages to include/exclude, example: '["raw_json", "parse_url", "delay"]' (all)
+    -l list, list all available stages"
+    exit 1
 }
 
-while getopts "d:u:r:ohesw:" opt; do
+# FIXME: This is a mess, but it works
+while getopts "d:u:r:ohesw:b:m:l" opt; do
     case $opt in
         d ) duration=$OPTARG;;
         u ) url=$OPTARG;;
         r ) rate=$OPTARG;;
         o ) output=false;;
-        h ) usage
-        exit 1;;
+        h ) usage;;
         e ) show_errors=true;;
         s ) skip_benchmarks=true;;
         w ) max_workers=$OPTARG;;
-        *) exit 1;;
+        m ) mode=$OPTARG;;
+        b ) readarray -t selected_stages <<< $(jq .[] <<< $OPTARG);;
+        l ) echo $(ls -1 stages); exit 1;;
+        * ) exit 1;;
     esac
 done
+
+
+
 
 # Remove / from end of url if included by the user
 url=$(echo $url | sed 's/\/$//')
@@ -44,45 +59,98 @@ url=$(echo $url | sed 's/\/$//')
 # trap BLA::stop_loading_animation SIGINT
 
 
+
 nc='\033[0m'           # Text Reset
 bold='\033[1;97m'      # Bold White
 
 duration_seconds=$(sed 's/d/*24*3600 +/g; s/h/*3600 +/g; s/m/*60 +/g; s/s/\+/g; s/+[ ]*$//g' <<< $duration | bc)
-stage_count=$(ls -1 stages| wc -l | xargs)
-estimated_time=$(($stage_count*$duration_seconds))
 
-clear
+# clear
 
 if [ $skip_benchmarks = false ] ; then
+    start_time="$(date -u +%s)"
+
     echo -e "${bold}Starting benchmarks on ${url} for ${duration}/stage${nc}"
     echo "Rate: ${rate}"
-    echo "Stage count: ${stage_count}"
-    echo "Estimated time: ${estimated_time}s"
-    echo ""
 
     # BLA::start_loading_animation "${BLA_braille_whitespace[@]}"
 
-    echo "Starting raw_json"
-    ./stages/raw_json.sh "${url}/raw_json" $duration $rate $max_workers
 
-    echo "Starting parse_url"
-    ./stages/parse_url.sh "${url}/parse_url" $duration $rate $max_workers
+    if [ $mode = 'full' ] ; then
+        stage_count=$(ls -1 stages| wc -l | xargs)
+        estimated_time=$(($stage_count*$duration_seconds))
 
-    echo "Starting delay"
-    ./stages/delay.sh "${url}/delay" $duration $rate $max_workers
+        echo "Stage count: ${stage_count}"
+        echo "Estimated time: ${estimated_time}s"
+        echo ""
 
-    echo "Starting post"
-    ./stages/post.sh "${url}/post" $duration $rate $max_workers
 
-    echo "Starting post_read"
-    ./stages/post_read.sh "${url}/post_read" $duration $rate $max_workers
+        for stage in "${all_stages[@]}"; do
+            stage=$(sed 's/\.sh$//' <<< $stage)
 
-    echo "Starting post_read_big_body"
-    ./stages/post_read_big_body.sh "${url}/post_read" $duration $rate $max_workers
+            echo Starting $stage
+            ./stages/$stage.sh "${url}/${stage}" $duration $rate $max_workers
+        done
+    fi
+
+
+
+    if [ $mode = 'only' ] ; then
+        stage_count=$( echo "${selected_stages[@]}" | wc -w | xargs)
+        estimated_time=$(($stage_count*$duration_seconds))
+
+        echo "Stage count: ${stage_count}"
+        echo "Estimated time: ${estimated_time}s"
+        echo ""
+
+        for stage in "${selected_stages[@]}"; do
+            # strip surrounding qoutes from $stage
+            stage=$(echo $stage | sed 's/^"\(.*\)"$/\1/')
+            echo Starting $stage
+            ./stages/$stage.sh "${url}/${stage}" $duration $rate $max_workers
+        done
+    fi
+
+
+
+    contains() {
+        # echos true if the last argument is in the array of all arguments except the
+        [[ "${@:1:$#-1}.sh" =~ "${@:$#}" ]] && echo 'true'
+    }
+
+    if [ $mode = 'skip' ] ; then
+        _total_stages=$(ls -1 stages| wc -l | xargs)
+        _skipped_stages=$(echo "${selected_stages[@]}" | wc -w | xargs)
+
+        stage_count=$(bc <<< "$_total_stages - $_skipped_stages")
+        estimated_time=$(($stage_count*$duration_seconds))
+
+        echo "Stage count: ${stage_count}"
+        echo "Estimated time: ${estimated_time}s"
+        echo ""
+
+
+        for stage in "${all_stages[@]}"; do
+            stage=$(sed 's/\.sh$//' <<< $stage)
+
+            # skips the stage if it is in the selected_stages array
+            if [[ $(contains "${selected_stages[@]}" $stage) = 'true' ]] ; then continue ; fi
+
+            echo Starting $stage
+            ./stages/$stage.sh "${url}/${stage}" $duration $rate $max_workers
+        done
+    fi
+
+
+
 
 
     # BLA::stop_loading_animation &> /dev/null
-    echo -e "\n${bold}Finished benchmark"
+
+    end_time="$(date -u +%s)"
+    elapsed="$(($end_time-$start_time))"
+
+    echo -e "\n${bold}Finished benchmark in ${elapsed}s${nc}"
 
     # Restore terminal cursor
     tput cnorm
@@ -90,18 +158,17 @@ fi
 
 # ---------------------- REPORT ------------------------------
 if [ $output = true ] ; then
-    echo -e "\nGenerating report${nc}"
+    echo -e "\n${bold}Generating report${nc}"
     # BLA::start_loading_animation "${BLA_braille_whitespace[@]}"
 
-    vegeta report results/*.bin > report.txt
 
     # BLA::stop_loading_animation &> /dev/null
-    echo -e "\n"
+    # echo -e "\n"
 
     if [ $show_errors = true ] ; then
-        cat report.txt
+        vegeta report results/*.bin
     else
-        grep report.txt -e "Requests" -e "Duration" -e "Latencies" -e "Bytes" -e "Success" -e "Status"
+        grep -e "Requests" -e "Duration" -e "Latencies" -e "Bytes" -e "Success" -e "Status" <<< vegeta report results/*.bin
     fi
 
     # vegeta plot results/*.bin > plot.html
