@@ -106,6 +106,7 @@ if [ $skip_benchmarks = false ] ; then
         for stage in "${selected_stages[@]}"; do
             # strip surrounding qoutes from $stage
             stage=$(echo $stage | sed 's/^"\(.*\)"$/\1/')
+            # strip .sh from $stage
             stage=$(echo $stage | sed 's/\.sh$//')
             echo Starting $stage
             ./stages/$stage.sh "${url}/${stage}" $duration $rate $max_workers
