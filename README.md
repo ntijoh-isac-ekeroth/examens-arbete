@@ -4,6 +4,7 @@
 
 - [Vegeta](https://github.com/tsenart/vegeta)
 - Python 3.9 (See requirements.txt per framework)
+- [jq](https://github.com/stedolan/jq)
 
 ## TODO?
 
