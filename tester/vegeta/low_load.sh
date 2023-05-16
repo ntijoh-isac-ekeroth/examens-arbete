@@ -15,10 +15,6 @@ for stage in "${@:5:$#}"; do
 # for stage in "${@:$#:$#}"; do
     stage=$(sed 's/\.sh$//' <<< $stage)
 
-    if [ $stage = "low_load" ]; then
-        continue
-    fi
-
     # Matches on the stage name and and a rate of 0
     # Take the last line to ensure the longest duration test is used
     # file=$(ls ./results | grep -E "^${stage}_\d+\w_0.bin$" | tail -n 1)
@@ -33,14 +29,13 @@ for stage in "${@:5:$#}"; do
         rate=1
     fi
 
-
     echo Starting $stage
 
     # Stage, URL, Duration, Rate, Max Workers
     ./stages/$stage.sh "${url}/${stage}" $2 $rate $4
 
-
 done
+
 end_time="$(date -u +%s)"
 elapsed="$(($end_time-$start_time))"
 

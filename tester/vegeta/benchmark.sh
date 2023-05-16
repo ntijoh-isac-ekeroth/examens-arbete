@@ -1,12 +1,9 @@
 #!/opt/homebrew/bin/bash
 ##!/bin/bash
 
-duration=5s
-url='http://localhost:5000'
+duration=30s
+url='localhost:7777'
 rate=0
-output=true
-show_errors=false
-skip_benchmarks=false
 max_workers=100
 mode="full" # full, skip, only, low_load
 
@@ -19,7 +16,7 @@ function usage() {
     -h                 Show help menu
     -l                 List all available stages
     -m <mode>          Mode: full, skip, only, low_load (full)
-    -r <rate>          Requests per second, 0=inf (1000)
+    -r <rate>          Requests per second, 0=inf (0)
     -s <stages>        Stages to include/exclude as JSON array, e.g., '["raw_json", "parse_url", "delay"]' (all)
     -t <duration>      Duration in si units (1s, 5m, 10h)
     -u <url>           Base URL of benchmark (http://localhost:5000)
@@ -70,10 +67,6 @@ if [ $mode = 'full' ] ; then
     for stage in "${all_stages[@]}"; do
         stage=$(sed 's/\.sh$//' <<< $stage)
 
-        if [ $stage = "low_load" ]; then
-            continue
-        fi
-
         echo Starting $stage
         ./stages/$stage.sh "${url}/${stage}" $duration $rate $max_workers
     done
@@ -93,10 +86,6 @@ if [ $mode = 'only' ] ; then
         stage=$(echo $stage | sed 's/^"\(.*\)"$/\1/')
         # strip .sh from $stage
         stage=$(echo $stage | sed 's/\.sh$//')
-
-        if [ $stage = "low_load" ]; then
-            continue
-        fi
 
         echo Starting $stage
         ./stages/$stage.sh "${url}/${stage}" $duration $rate $max_workers "${all_stages[@]}"
@@ -126,11 +115,6 @@ if [ $mode = 'skip' ] ; then
     for stage in "${all_stages[@]}"; do
         stage=$(sed 's/\.sh$//' <<< $stage)
 
-
-        if [ $stage = "low_load" ]; then
-            continue
-        fi
-
         # skips the stage if it is in the selected_stages array
         if [[ $(contains "${selected_stages[@]}" $stage) = 'true' ]] ; then continue ; fi
 
@@ -152,7 +136,7 @@ if [ $mode = 'low_load' ] ; then
     echo ""
 
 
-    ./stages/low_load.sh "${url}/${stage}" $duration $rate $max_workers  "${all_stages[@]}"
+    ./low_load.sh "${url}/${stage}" $duration $rate $max_workers  "${all_stages[@]}"
 fi
 
 
