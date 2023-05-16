@@ -2,7 +2,7 @@
 ##!/bin/bash
 
 duration=30s
-url='localhost:7777'
+url='http://localhost:7777'
 rate=0
 max_workers=100
 mode="full" # full, skip, only, low_load

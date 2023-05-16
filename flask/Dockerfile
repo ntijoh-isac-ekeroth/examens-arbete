@@ -13,4 +13,6 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY ./src /code/app
 
 
-CMD ["gunicorn", "-w 8", "--port 7778:7778", "app:app"]
+WORKDIR /code/app
+
+CMD ["gunicorn", "-w 8", "-b 0.0.0.0:7778", "app:app"]
