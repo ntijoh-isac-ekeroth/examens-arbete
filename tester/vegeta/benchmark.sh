@@ -1,5 +1,5 @@
 #!/opt/homebrew/bin/bash
-##!/bin/bash
+#!/bin/bash
 
 duration=30s
 url='http://localhost:7777'
