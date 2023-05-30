@@ -12,7 +12,7 @@
 - Websockets
 - FastApi request models / no models
 - Frontend för att visa datan i d3?
-- Visa resultat för enskilda steg i cli
+
 
 ## ruff
 
@@ -184,7 +184,7 @@ Start image:
 docker run -d -p 7778:7778 --name flask flask
 ```
 
-# Frontend
+# Frontend WIP
 
 ## Setup
 Install dependencies
