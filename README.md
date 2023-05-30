@@ -10,7 +10,6 @@
 ## TODO?
 
 - Websockets
-- Låg load prestanda
 - FastApi request models / no models
 - Frontend för att visa datan i d3?
 - Visa resultat för enskilda steg i cli
