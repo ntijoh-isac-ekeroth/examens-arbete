@@ -11,6 +11,8 @@ start_time="$(date -u +%s)"
 
 echo -e "${cyan}Starting Low load Test${nc}"
 
+url=$1
+
 for stage in "${@:5:$#}"; do
 # for stage in "${@:$#:$#}"; do
     stage=$(sed 's/\.sh$//' <<< $stage)
@@ -32,7 +34,7 @@ for stage in "${@:5:$#}"; do
     echo Starting $stage
 
     # Stage, URL, Duration, Rate, Max Workers
-    ./stages/$stage.sh "${url}/${stage}" $2 $rate $4
+    ./stages/$stage.sh "${url}${stage}" $2 $rate $4
 
 done
 
