@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "" > targets/post_read_targets.list
+echo "" > targets/post_read_big_body_targets.list
 echo "
 POST ${1}
 Content-Type: application/json
