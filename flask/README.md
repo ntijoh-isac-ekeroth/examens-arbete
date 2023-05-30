@@ -4,7 +4,7 @@
 
 Create venv `/path/to/python -m venv ./venv`\
 Activate venv `source ./venv/bin/activate`\
-Install requirements `pip install -r ./requirements.txt`\
+Install requirements `pip install -r ./requirements.txt`
 
 ## Flask server
 
