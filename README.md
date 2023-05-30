@@ -184,7 +184,7 @@ Start image:
 docker run -d -p 7778:7778 --name flask flask
 ```
 
-# Frontend
+# Frontend WIP
 
 ## Setup
 Install dependencies
