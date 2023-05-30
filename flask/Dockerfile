@@ -15,4 +15,4 @@ COPY ./src /code/app
 
 WORKDIR /code/app
 
-CMD ["gunicorn", "-w 8", "-b 0.0.0.0:7778", "app:app"]
+CMD ["gunicorn", "-w 12", "-b 0.0.0.0:7778", "app:app"]
