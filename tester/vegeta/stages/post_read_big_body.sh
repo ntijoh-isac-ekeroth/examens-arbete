@@ -2,7 +2,7 @@
 
 echo "" > targets/post_read_targets.list
 echo "
-POST http://localhost:5000/post_read
+POST ${1}
 Content-Type: application/json
 @bodies/lorem_ipsum.json
 " >> targets/post_read_big_body_targets.list

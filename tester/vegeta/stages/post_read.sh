@@ -2,7 +2,7 @@
 
 echo "" > targets/post_read_targets.list
 echo "
-POST http://localhost:5000/post_read
+POST ${1}
 Content-Type: application/json
 @bodies/hello_world.json
 " >> targets/post_read_targets.list
