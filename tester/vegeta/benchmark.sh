@@ -56,7 +56,6 @@ echo "Rate: ${rate}"
 
 if [ $mode = 'full' ] ; then
     stage_count=$(ls -1 stages| wc -l | xargs)
-    stage_count=$(($stage_count-1))
     estimated_time=$(($stage_count*$duration_seconds))
 
     echo "Stage count: ${stage_count}"
@@ -101,7 +100,6 @@ contains() {
 
 if [ $mode = 'skip' ] ; then
     _total_stages=$(ls -1 stages| wc -l | xargs)
-    _total_stages=$(($_total_stages-1))
     _skipped_stages=$(echo "${selected_stages[@]}" | wc -w | xargs)
 
     stage_count=$(bc <<< "$_total_stages - $_skipped_stages")
@@ -124,11 +122,8 @@ if [ $mode = 'skip' ] ; then
 fi
 
 if [ $mode = 'low_load' ] ; then
-    _total_stages=$(ls -1 stages| wc -l | xargs)
-    _total_stages=$(($_total_stages-1))
-    _skipped_stages=$(echo "${selected_stages[@]}" | wc -w | xargs)
-
-    stage_count=$(bc <<< "$_total_stages - $_skipped_stages")
+    stage_count=$(ls -1 stages| wc -l | xargs)
+   
     estimated_time=$(($stage_count*$duration_seconds*2))
 
     echo "Stage count: ${stage_count} ($(($stage_count * 2)) including low_load)"
