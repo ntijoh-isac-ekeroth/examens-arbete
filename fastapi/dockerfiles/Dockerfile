@@ -1,4 +1,4 @@
-FROM pypy:3.9
+FROM python:3.9
 
 
 WORKDIR /code
@@ -16,6 +16,6 @@ WORKDIR /code/app
 
 # modify w acording to 2 * cpu cores + 1
 # Should not exceed 12 workers
-CMD ["gunicorn", "-k uvicorn.workers.UvicornWorker", "-w 12", "-b 0.0.0.0:7776", "main:app"]
+CMD ["gunicorn", "-k uvicorn.workers.UvicornWorker", "-w 12", "-b 0.0.0.0:7777", "main:app"]
 
 #CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7777"]

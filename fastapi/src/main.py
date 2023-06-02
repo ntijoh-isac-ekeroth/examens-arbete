@@ -9,9 +9,6 @@ class Post_Read_Body(BaseModel):
 
 app = FastAPI()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
 
 @app.get("/raw_json")
 async def raw_json():

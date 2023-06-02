@@ -1,4 +1,4 @@
-FROM pypy:3
+FROM python:3.9
 
 
 WORKDIR /code
@@ -16,9 +16,9 @@ COPY ./src /code/app
 WORKDIR /code/app
 
 
-# CMD ["gunicorn", "--worker-class gevent", "-w 12", "-b 0.0.0.0:7779", "patched:app"]
+# CMD ["gunicorn", "--worker-class gevent", "-w 12", "-b 0.0.0.0:7778", "patched:app"]
 
 CMD gunicorn --worker-class gevent \
   --workers 12 \
-  --bind 0.0.0.0:7779 \
+  --bind 0.0.0.0:7778 \
   patched:app
