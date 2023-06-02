@@ -1,0 +1,10 @@
+Requests      [total, rate, throughput]         39354069, 30333.86, 30333.85
+Duration      [total, attack, wait]             21m37s, 21m37s, 107.97µs
+Latencies     [min, mean, 50, 90, 95, 99, max]  69.89µs, 1.327ms, 1.078ms, 1.893ms, 2.341ms, 5.783ms, 607.322ms
+Bytes In      [total, mean]                     51519933193, 1309.14
+Bytes Out     [total, mean]                     50722053936, 1288.86
+Success       [ratio]                           100.00%
+Status Codes  [code:count]                      0:10  200:39354059  
+Error Set:
+unexpected EOF
+Post "http://localhost:7779/post_read_big_body": EOF
